@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.app.cpux.R;
 import com.app.cpux.adapter.AdapterListItem;
@@ -18,8 +17,6 @@ public class FragmentInfo extends Fragment {
     public static final String ARG_SECTION_TITLE = "section_number";
 
     private ListView listView1;
-    private TextView text;
-    private LoaderData cpu;
     private String title;
 
     @Override
@@ -28,7 +25,6 @@ public class FragmentInfo extends Fragment {
         title = getArguments().getString(ARG_SECTION_TITLE, "");
 
         listView1 = (ListView) rootView.findViewById(R.id.listView1);
-        text = (TextView) rootView.findViewById(R.id.text1);
         loadAndDisplayData(title);
 
         return rootView;

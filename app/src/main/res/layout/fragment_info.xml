@@ -3,27 +3,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="left"
-                android:text="text"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-    </ScrollView>
 
     <ListView
         android:id="@+id/listView1"
@@ -31,8 +10,6 @@
         android:layout_height="match_parent"
         android:divider="@color/soft_grey2"
         android:dividerHeight="1px"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp"
         android:visibility="visible" />
 
 </LinearLayout>

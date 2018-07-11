@@ -21,10 +21,12 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.app.cpux.data.AppConfig;
+import com.app.cpux.data.GDPR;
 import com.app.cpux.fragment.FragmentAbout;
 import com.app.cpux.fragment.FragmentInfo;
 import com.app.cpux.tools.LoaderData;
 import com.app.cpux.tools.Utils;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -48,7 +50,6 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initToolbar();
         iniComponent();
-        initAds();
     }
 
     private void iniComponent() {
@@ -89,24 +90,21 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void initAds() {
+        if (AppConfig.ENABLE_ADSENSE) GDPR.updateConsentStatus(this);
+
+        AdRequest adRequest = new AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter.class, GDPR.getBundleAd(this)).build();
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-        AdRequest adRequest = new AdRequest.Builder().build();
         mInterstitialAd.loadAd(adRequest);
 
         mAdView = (AdView) findViewById(R.id.ad_view);
-        mAdView.setVisibility(View.GONE);
-
         if (AppConfig.ENABLE_ADSENSE && Utils.cekConnection(getApplicationContext())) {
+            mAdView.setVisibility(View.VISIBLE);
             mAdView.loadAd(adRequest);
-            mAdView.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    mAdView.setVisibility(View.VISIBLE);
-                    super.onAdLoaded();
-                }
-            });
+        } else {
+            mAdView.setVisibility(View.GONE);
         }
+
     }
 
     public void showInterstitial() {
@@ -116,6 +114,12 @@ public class ActivityMain extends AppCompatActivity {
         if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        initAds();
+        super.onResume();
     }
 
     @Override

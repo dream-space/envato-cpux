@@ -20,6 +20,7 @@
             app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
             app:contentInsetStartWithNavigation="0dp"
+            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
@@ -71,10 +72,10 @@
 
         <com.google.android.gms.ads.AdView
             android:id="@+id/ad_view"
-            app:adSize="SMART_BANNER"
-            app:adUnitId="@string/banner_ad_unit_id"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:adSize="SMART_BANNER"
+            app:adUnitId="@string/banner_ad_unit_id" />
 
     </LinearLayout>
 
