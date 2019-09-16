@@ -9,6 +9,9 @@
         http://dream-space.web.id/doc_privacy/privacy_policy.php?name=CPU-X
     </string>
 
+    <!--Edit with your admob app id-->
+    <string name="admob_app_id">ca-app-pub-3239677920600357~5416958163</string>
+
     <!--Replace with your own interstitial ad unit id. -->
     <string name="interstitial_ad_unit_id">ca-app-pub-3239677920600357/3800624160</string>
 
