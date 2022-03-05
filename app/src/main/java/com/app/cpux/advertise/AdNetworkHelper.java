@@ -9,17 +9,22 @@ import android.view.Display;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.app.cpux.BuildConfig;
+import androidx.annotation.NonNull;
+
+import com.google.ads.mediation.admob.AdMobAdapter;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.app.cpux.R;
 import com.app.cpux.data.AppConfig;
 import com.app.cpux.data.GDPR;
 import com.app.cpux.data.SharedPref;
-import com.unity3d.ads.IUnityAdsInitializationListener;
-import com.unity3d.ads.IUnityAdsShowListener;
-import com.unity3d.ads.UnityAds;
-import com.unity3d.services.banners.BannerErrorInfo;
-import com.unity3d.services.banners.BannerView;
-import com.unity3d.services.banners.UnityBannerSize;
 
 public class AdNetworkHelper {
 
@@ -27,9 +32,9 @@ public class AdNetworkHelper {
 
     private final Activity activity;
     private final SharedPref sharedPref;
-    private final static String unity_game_id = "4643549";
-    private final static String unity_banner_id = "Banner_Android";
-    private final static String unity_interstitial_id = "Interstitial_Android";
+
+    //Interstitial
+    private InterstitialAd adMobInterstitialAd;
 
     public AdNetworkHelper(Activity activity) {
         this.activity = activity;
@@ -38,17 +43,7 @@ public class AdNetworkHelper {
 
     @SuppressLint("MissingPermission")
     public static void init(Context context) {
-        UnityAds.initialize(context, unity_game_id, BuildConfig.DEBUG, new IUnityAdsInitializationListener() {
-            @Override
-            public void onInitializationComplete() {
-                Log.d(TAG, "Unity Ads Initialization Complete");
-            }
-
-            @Override
-            public void onInitializationFailed(UnityAds.UnityAdsInitializationError error, String message) {
-                Log.d(TAG, "Unity Ads Initialization Failed: [" + error + "] " + message);
-            }
-        });
+        MobileAds.initialize(context);
     }
 
     public void showGDPR() {
@@ -60,65 +55,65 @@ public class AdNetworkHelper {
         if (!enable) return;
         LinearLayout ad_container = activity.findViewById(R.id.ad_container);
         ad_container.removeAllViews();
+        AdRequest adRequest = new AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter.class, GDPR.getBundleAd(activity)).build();
         ad_container.setVisibility(View.GONE);
-        BannerView bottomBanner = new BannerView(activity, unity_banner_id, getUnityBannerSize());
-        bottomBanner.setListener(new BannerView.IListener() {
+        AdView adView = new AdView(activity);
+        adView.setAdUnitId(activity.getString(R.string.banner_ad_unit_id));
+        ad_container.addView(adView);
+        adView.setAdSize(getAdmobBannerSize());
+        adView.loadAd(adRequest);
+        adView.setAdListener(new AdListener() {
             @Override
-            public void onBannerLoaded(BannerView bannerView) {
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
                 ad_container.setVisibility(View.VISIBLE);
-                Log.d(TAG, "ready");
             }
 
             @Override
-            public void onBannerClick(BannerView bannerView) {
-
-            }
-
-            @Override
-            public void onBannerFailedToLoad(BannerView bannerView, BannerErrorInfo bannerErrorInfo) {
-                Log.d(TAG, "Banner Error" + bannerErrorInfo);
+            public void onAdFailedToLoad(@NonNull LoadAdError adError) {
+                // Code to be executed when an ad request fails.
                 ad_container.setVisibility(View.GONE);
             }
-
-            @Override
-            public void onBannerLeftApplication(BannerView bannerView) {
-
-            }
         });
-        ad_container.addView(bottomBanner);
-        bottomBanner.load();
     }
 
     public void loadInterstitialAd(boolean enable) {
+        if (!enable) return;
+        InterstitialAd.load(activity, activity.getString(R.string.interstitial_ad_unit_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                adMobInterstitialAd = interstitialAd;
+                adMobInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        adMobInterstitialAd = null;
+                        loadInterstitialAd(enable);
+                    }
 
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        Log.d(TAG, "The ad was shown.");
+                        sharedPref.setIntersCounter(0);
+                    }
+                });
+                Log.i(TAG, "onAdLoaded");
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                Log.i(TAG, loadAdError.getMessage());
+                adMobInterstitialAd = null;
+                Log.d(TAG, "Failed load AdMob Interstitial Ad");
+            }
+        });
     }
 
     public boolean showInterstitialAd(boolean enable) {
         if (!enable) return false;
         int counter = new SharedPref(activity).getIntersCounter();
         if (counter > AppConfig.ADS_INTERSTITIAL_INTERVAL) {
-            UnityAds.show(activity, unity_interstitial_id, new IUnityAdsShowListener() {
-                @Override
-                public void onUnityAdsShowFailure(String s, UnityAds.UnityAdsShowError unityAdsShowError, String s1) {
-
-                }
-
-                @Override
-                public void onUnityAdsShowStart(String s) {
-                    sharedPref.setIntersCounter(0);
-                    loadInterstitialAd(enable);
-                }
-
-                @Override
-                public void onUnityAdsShowClick(String s) {
-
-                }
-
-                @Override
-                public void onUnityAdsShowComplete(String s, UnityAds.UnityAdsShowCompletionState unityAdsShowCompletionState) {
-
-                }
-            });
+            if (adMobInterstitialAd == null) return false;
+            adMobInterstitialAd.show(activity);
             return true;
         } else {
             sharedPref.setIntersCounter(sharedPref.getIntersCounter() + 1);
@@ -126,14 +121,17 @@ public class AdNetworkHelper {
         return false;
     }
 
-    private UnityBannerSize getUnityBannerSize() {
+    private AdSize getAdmobBannerSize() {
+        // Step 2 - Determine the screen width (less decorations) to use for the ad width.
         Display display = activity.getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
         float widthPixels = outMetrics.widthPixels;
         float density = outMetrics.density;
         int adWidth = (int) (widthPixels / density);
-        return new UnityBannerSize(adWidth, 50);
+        // Step 3 - Get adaptive ad size and return for setting on the ad view.
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth);
     }
+
 
 }
