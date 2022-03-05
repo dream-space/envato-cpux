@@ -5,6 +5,14 @@ import android.content.SharedPreferences;
 
 public class SharedPref {
 
+    private Context context;
+    private SharedPreferences sharedPreferences;
+
+    public SharedPref(Context context) {
+        this.context = context;
+        sharedPreferences = context.getSharedPreferences("MAIN_PREF", Context.MODE_PRIVATE);
+    }
+
     /* cpu*/
     public static void setCPUData(Context ctx, String s) {
         setStringPref("cpu_", s, ctx);
@@ -100,6 +108,19 @@ public class SharedPref {
         prefEditor.clear();
         prefEditor.putBoolean(key_val, val);
         prefEditor.commit();
+    }
+
+    // Preference for first launch
+    public void setIntersCounter(int counter) {
+        sharedPreferences.edit().putInt("INTERS_COUNT", counter).apply();
+    }
+
+    public int getIntersCounter() {
+        return sharedPreferences.getInt("INTERS_COUNT", 0);
+    }
+
+    public void clearIntersCounter() {
+        sharedPreferences.edit().putInt("INTERS_COUNT", 0).apply();
     }
 
 }

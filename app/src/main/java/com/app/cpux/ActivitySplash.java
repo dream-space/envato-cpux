@@ -41,7 +41,7 @@ public class ActivitySplash extends Activity {
                 Thread.sleep(300);
                 cpu.loadCpuInfo();
 
-                publishProgress("load batery info");
+                publishProgress("load battery info");
                 Thread.sleep(300);
                 cpu.loadBateryInfo();
 

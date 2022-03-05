@@ -5,31 +5,29 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.app.cpux.advertise.AdNetworkHelper;
 import com.app.cpux.data.AppConfig;
-import com.app.cpux.data.GDPR;
 import com.app.cpux.fragment.FragmentAbout;
 import com.app.cpux.fragment.FragmentInfo;
 import com.app.cpux.tools.LoaderData;
-import com.app.cpux.tools.Utils;
-import com.google.ads.mediation.admob.AdMobAdapter;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +36,9 @@ public class ActivityMain extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    private LinearLayout lyt_progress;
+    private TextView tv_message;
     private TabLayout tabLayout;
-    //for ads
-    private InterstitialAd mInterstitialAd;
-    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +46,7 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initToolbar();
         iniComponent();
+        prepareAds();
     }
 
     private void iniComponent() {
@@ -61,6 +59,8 @@ public class ActivityMain extends AppCompatActivity {
         mSectionsPagerAdapter.addFragment(new FragmentInfo(), getString(R.string.tab_title_sensor));
         mSectionsPagerAdapter.addFragment(new FragmentAbout(), getString(R.string.tab_title_about));
 
+        tv_message = (TextView) findViewById(R.id.tv_message);
+        lyt_progress = (LinearLayout) findViewById(R.id.lyt_progress);
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setOffscreenPageLimit(6);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -70,9 +70,10 @@ public class ActivityMain extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                showInterstitial();
+                showInterstitialAd();
             }
         });
+        lyt_progress.setVisibility(View.GONE);
     }
 
     private void initToolbar() {
@@ -88,37 +89,17 @@ public class ActivityMain extends AppCompatActivity {
         }
     }
 
-    private void initAds() {
-        if (AppConfig.ENABLE_ADSENSE) GDPR.updateConsentStatus(this);
+    private AdNetworkHelper adNetworkHelper;
 
-        AdRequest adRequest = new AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter.class, GDPR.getBundleAd(this)).build();
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-        mInterstitialAd.loadAd(adRequest);
-
-        mAdView = (AdView) findViewById(R.id.ad_view);
-        if (AppConfig.ENABLE_ADSENSE && Utils.cekConnection(getApplicationContext())) {
-            mAdView.setVisibility(View.VISIBLE);
-            mAdView.loadAd(adRequest);
-        } else {
-            mAdView.setVisibility(View.GONE);
-        }
-
+    private void prepareAds() {
+        adNetworkHelper = new AdNetworkHelper(this);
+        adNetworkHelper.showGDPR();
+        adNetworkHelper.loadBannerAd(AppConfig.ADS_MAIN_BANNER);
+        adNetworkHelper.loadInterstitialAd(AppConfig.ADS_MAIN_INTERSTITIAL);
     }
 
-    public void showInterstitial() {
-        if (!AppConfig.ENABLE_ADSENSE || !Utils.cekConnection(getApplicationContext())) {
-            return;
-        }
-        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        initAds();
-        super.onResume();
+    public void showInterstitialAd() {
+        adNetworkHelper.showInterstitialAd(AppConfig.ADS_MAIN_INTERSTITIAL);
     }
 
     @Override
@@ -133,13 +114,11 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.refresh:
-                new LoaderInfo(this).execute("");
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.refresh) {
+            new LoaderInfo(this).execute("");
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -151,29 +130,50 @@ public class ActivityMain extends AppCompatActivity {
         public LoaderInfo(Activity act) {
             context = act;
             cpu = new LoaderData(act);
-            setProgressBarIndeterminateVisibility(true);
+            mViewPager.setVisibility(View.INVISIBLE);
+            lyt_progress.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected String doInBackground(String... params) {
             try {
+                publishProgress("load cpu info");
+                Thread.sleep(200);
                 cpu.loadCpuInfo();
+
+                publishProgress("load battery info");
+                Thread.sleep(200);
                 cpu.loadBateryInfo();
+
+                publishProgress("load device info");
+                Thread.sleep(200);
                 cpu.loadDeviceInfo();
+
+                publishProgress("load system info");
+                Thread.sleep(200);
                 cpu.loadSystemInfo();
+
+                publishProgress("load sensor info");
+                Thread.sleep(200);
                 cpu.loadSupportInfo();
+
                 status = "succced";
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             return null;
         }
 
+        @Override
+        protected void onProgressUpdate(String... values) {
+            tv_message.setText(values[0]);
+            super.onProgressUpdate(values);
+        }
 
         @Override
         protected void onPostExecute(String result) {
-            setProgressBarIndeterminateVisibility(false);
+            mViewPager.setVisibility(View.VISIBLE);
+            lyt_progress.setVisibility(View.GONE);
             if (!status.equals("failed")) {
                 Toast.makeText(context, "Info updated", Toast.LENGTH_SHORT).show();
                 //refresh view
