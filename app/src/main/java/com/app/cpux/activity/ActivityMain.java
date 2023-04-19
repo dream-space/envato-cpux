@@ -1,10 +1,12 @@
-package com.app.cpux;
+package com.app.cpux.activity;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,12 +25,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.app.cpux.AppConfig;
+import com.app.cpux.R;
 import com.app.cpux.advertise.AdNetworkHelper;
-import com.app.cpux.data.AppConfig;
 import com.app.cpux.fragment.FragmentAbout;
 import com.app.cpux.fragment.FragmentInfo;
 import com.app.cpux.tools.LoaderData;
+import com.app.cpux.tools.Utils;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +52,7 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initToolbar();
         iniComponent();
-        prepareAds();
+        requestRemoteConfig();
     }
 
     private void iniComponent() {
@@ -89,17 +95,17 @@ public class ActivityMain extends AppCompatActivity {
         }
     }
 
-    private AdNetworkHelper adNetworkHelper;
+    private AdNetworkHelper adNetworkHelper = null;
 
     private void prepareAds() {
         adNetworkHelper = new AdNetworkHelper(this);
-        adNetworkHelper.showGDPR();
-        adNetworkHelper.loadBannerAd(AppConfig.ADS_MAIN_BANNER);
-        adNetworkHelper.loadInterstitialAd(AppConfig.ADS_MAIN_INTERSTITIAL);
+        adNetworkHelper.loadBannerAd(true);
+        adNetworkHelper.loadInterstitialAd(true);
     }
 
     public void showInterstitialAd() {
-        adNetworkHelper.showInterstitialAd(AppConfig.ADS_MAIN_INTERSTITIAL);
+        if (adNetworkHelper == null) return;
+        adNetworkHelper.showInterstitialAd(true);
     }
 
     @Override
@@ -138,29 +144,45 @@ public class ActivityMain extends AppCompatActivity {
         protected String doInBackground(String... params) {
             try {
                 publishProgress("load cpu info");
-                Thread.sleep(200);
+                Thread.sleep(300);
                 cpu.loadCpuInfo();
-
-                publishProgress("load battery info");
-                Thread.sleep(200);
-                cpu.loadBateryInfo();
-
-                publishProgress("load device info");
-                Thread.sleep(200);
-                cpu.loadDeviceInfo();
-
-                publishProgress("load system info");
-                Thread.sleep(200);
-                cpu.loadSystemInfo();
-
-                publishProgress("load sensor info");
-                Thread.sleep(200);
-                cpu.loadSupportInfo();
-
-                status = "succced";
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            try {
+                publishProgress("load battery info");
+                Thread.sleep(300);
+                cpu.loadBateryInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                publishProgress("load device info");
+                Thread.sleep(300);
+                cpu.loadDeviceInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                publishProgress("load system info");
+                Thread.sleep(300);
+                cpu.loadSystemInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                publishProgress("load sensor info");
+                Thread.sleep(300);
+                cpu.loadSupportInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            status = "succced";
             return null;
         }
 
@@ -220,5 +242,37 @@ public class ActivityMain extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+
+    private void requestRemoteConfig() {
+        if (!AppConfig.USE_REMOTE_CONFIG) {
+            prepareAds();
+            return;
+        }
+        Log.d("REMOTE_CONFIG", "requestRemoteConfig");
+        FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        firebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("REMOTE_CONFIG", "SUCCESS");
+                AppConfig.setFromRemoteConfig(firebaseRemoteConfig);
+                prepareAds();
+            } else {
+                Log.d("REMOTE_CONFIG", "FAILED");
+                new Handler().postDelayed(this::requestRemoteConfig, 500);
+            }
+        });
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        Utils.checkGooglePlayUpdate(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Utils.checkGooglePlayUpdateStopListener();
     }
 }

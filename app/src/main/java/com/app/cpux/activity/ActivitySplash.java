@@ -1,4 +1,4 @@
-package com.app.cpux;
+package com.app.cpux.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.app.cpux.R;
 import com.app.cpux.tools.LoaderData;
 
 public class ActivitySplash extends Activity {
@@ -36,28 +37,42 @@ public class ActivitySplash extends Activity {
         @Override
         protected String doInBackground(String... params) {
             try {
-
                 publishProgress("load cpu info");
                 Thread.sleep(300);
                 cpu.loadCpuInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            try {
                 publishProgress("load battery info");
                 Thread.sleep(300);
                 cpu.loadBateryInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            try {
                 publishProgress("load device info");
                 Thread.sleep(300);
                 cpu.loadDeviceInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            try {
                 publishProgress("load system info");
                 Thread.sleep(300);
                 cpu.loadSystemInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            try {
                 publishProgress("load sensor info");
                 Thread.sleep(300);
                 cpu.loadSupportInfo();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             return null;

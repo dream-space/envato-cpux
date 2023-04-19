@@ -1,23 +1,6 @@
 <resources>
     <string name="app_name">CPU-X</string>
 
-    <!-- Replace with your Admob Publisher Id. -->
-    <string name="publisher_id">pub-3239677920600357</string>
-
-    <!-- Replace with your Privacy Policy Url. -->
-    <string name="privacy_policy_url">
-        http://dream-space.web.id/doc_privacy/privacy_policy.php?name=CPU-X
-    </string>
-
-    <!--Edit with your admob app id-->
-    <string name="admob_app_id">ca-app-pub-3239677920600357~5416958163</string>
-
-    <!--Replace with your own interstitial ad unit id. -->
-    <string name="interstitial_ad_unit_id">ca-app-pub-3239677920600357/3800624160</string>
-
-    <!--Replace with your own banner ad unit id. -->
-    <string name="banner_ad_unit_id">ca-app-pub-3239677920600357/2323890961</string>
-
     <string name="tab_title_cpu">CPU</string>
     <string name="tab_title_device">DEVICE</string>
     <string name="tab_title_system">SYSTEM</string>

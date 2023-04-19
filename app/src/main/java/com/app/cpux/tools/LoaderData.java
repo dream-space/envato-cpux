@@ -237,15 +237,15 @@ public class LoaderData {
 
     public static String getNetworkType(Context context) {
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        switch (tm.getNetworkType()) {
-            case TelephonyManager.PHONE_TYPE_CDMA:
-                return "CDMA";
-
-            case TelephonyManager.PHONE_TYPE_GSM:
-                return "GSM";
-
-            case TelephonyManager.PHONE_TYPE_NONE:
-                return "None";
+        int networkType = tm.getPhoneType();
+        if (networkType == TelephonyManager.PHONE_TYPE_CDMA) {
+            return "CDMA";
+        } else if (networkType == TelephonyManager.PHONE_TYPE_GSM) {
+            return "GSM";
+        } else if (networkType == TelephonyManager.PHONE_TYPE_SIP) {
+            return "SIP";
+        } else if (networkType == TelephonyManager.PHONE_TYPE_NONE) {
+            return "None";
         }
         return null;
     }
