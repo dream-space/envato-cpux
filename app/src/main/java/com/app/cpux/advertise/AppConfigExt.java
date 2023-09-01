@@ -3,7 +3,7 @@ package com.app.cpux.advertise;
 import com.app.cpux.AppConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
-import dreamspace.ads.data.AdNetworkType;
+import dreamspace.ads.sdk.data.AdNetworkType;
 
 public class AppConfigExt {
 
@@ -14,12 +14,6 @@ public class AppConfigExt {
 
     // Set data from remote config
     public static void setFromRemoteConfig(FirebaseRemoteConfig remote) {
-
-        // fetch Ads Config with data from remote config
-        if (!remote.getString("ad_enable").isEmpty()) {
-            AppConfig.ads.ad_enable = Boolean.parseBoolean(remote.getString("ad_enable"));
-        }
-
         if (!remote.getString("ad_networks").isEmpty()) {
 
             String[] arr = remote.getString("ad_networks").split(",");
@@ -28,7 +22,7 @@ public class AppConfigExt {
                 try {
                     adNetworkTypes[i] = AdNetworkType.valueOf(arr[i].trim());
                 } catch (Exception e) {
-                    adNetworkTypes[i] = AdNetworkType.ADMOB;
+
                 }
             }
             AppConfig.ads.ad_networks = adNetworkTypes;
@@ -38,11 +32,17 @@ public class AppConfigExt {
             AppConfig.ads.ad_enable_gdpr = Boolean.parseBoolean(remote.getString("ad_enable_gdpr"));
         }
 
-        if (!remote.getString("retry_ad_networks").isEmpty()) {
-            try {
-                AppConfig.ads.ad_inters_interval = Integer.parseInt(remote.getString("retry_ad_networks"));
-            } catch (Exception e) {
-            }
+        if (!remote.getString("ad_main_banner").isEmpty()) {
+            AppConfig.ads.ad_main_banner = Boolean.parseBoolean(remote.getString("ad_main_banner"));
+        }
+        if (!remote.getString("ad_main_interstitial").isEmpty()) {
+            AppConfig.ads.ad_main_interstitial = Boolean.parseBoolean(remote.getString("ad_main_interstitial"));
+        }
+        if (!remote.getString("ad_global_open_app").isEmpty()) {
+            AppConfig.ads.ad_global_open_app = Boolean.parseBoolean(remote.getString("ad_global_open_app"));
+        }
+        if (!remote.getString("ad_splash_open_app").isEmpty()) {
+            AppConfig.ads.ad_splash_open_app = Boolean.parseBoolean(remote.getString("ad_splash_open_app"));
         }
 
         if (!remote.getString("ad_inters_interval").isEmpty()) {
@@ -61,25 +61,15 @@ public class AppConfigExt {
         if (!remote.getString("ad_admob_interstitial_unit_id").isEmpty()) {
             AppConfig.ads.ad_admob_interstitial_unit_id = remote.getString("ad_admob_interstitial_unit_id");
         }
-
-        if (!remote.getString("ad_ironsource_app_key").isEmpty()) {
-            AppConfig.ads.ad_ironsource_app_key = remote.getString("ad_ironsource_app_key");
-        }
-        if (!remote.getString("ad_ironsource_banner_unit_id").isEmpty()) {
-            AppConfig.ads.ad_ironsource_banner_unit_id = remote.getString("ad_ironsource_banner_unit_id");
-        }
-        if (!remote.getString("ad_ironsource_interstitial_unit_id").isEmpty()) {
-            AppConfig.ads.ad_ironsource_interstitial_unit_id = remote.getString("ad_ironsource_interstitial_unit_id");
+        if (!remote.getString("ad_admob_open_app_unit_id").isEmpty()) {
+            AppConfig.ads.ad_admob_open_app_unit_id = remote.getString("ad_admob_open_app_unit_id");
         }
 
-        if (!remote.getString("ad_unity_game_id").isEmpty()) {
-            AppConfig.ads.ad_unity_game_id = remote.getString("ad_unity_game_id");
+        if (!remote.getString("ad_fan_banner_unit_id").isEmpty()) {
+            AppConfig.ads.ad_fan_banner_unit_id = remote.getString("ad_fan_banner_unit_id");
         }
-        if (!remote.getString("ad_unity_banner_unit_id").isEmpty()) {
-            AppConfig.ads.ad_unity_banner_unit_id = remote.getString("ad_unity_banner_unit_id");
-        }
-        if (!remote.getString("ad_unity_interstitial_unit_id").isEmpty()) {
-            AppConfig.ads.ad_unity_interstitial_unit_id = remote.getString("ad_unity_interstitial_unit_id");
+        if (!remote.getString("ad_fan_interstitial_unit_id").isEmpty()) {
+            AppConfig.ads.ad_fan_banner_unit_id = remote.getString("ad_fan_banner_unit_id");
         }
     }
 }

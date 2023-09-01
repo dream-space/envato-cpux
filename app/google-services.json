@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "266441656715",
+    "project_id": "cpu-x-ds",
+    "storage_bucket": "cpu-x-ds.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266441656715:android:0da7af121d38270525078e",
+        "android_client_info": {
+          "package_name": "com.app.cpux"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266441656715-ubk8iuppbov69n33jgf9k1ta49r8h09n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGOGX5EKUoSTixUzJjMFVbfNINZ_K3dIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "266441656715-ubk8iuppbov69n33jgf9k1ta49r8h09n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

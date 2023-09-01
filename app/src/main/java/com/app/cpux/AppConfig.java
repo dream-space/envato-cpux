@@ -4,7 +4,7 @@ import com.app.cpux.advertise.AppConfigExt;
 
 import java.io.Serializable;
 
-import dreamspace.ads.data.AdNetworkType;
+import dreamspace.ads.sdk.data.AdNetworkType;
 
 public class AppConfig extends AppConfigExt implements Serializable {
 
@@ -27,34 +27,40 @@ public class AppConfig extends AppConfigExt implements Serializable {
         /* enable disable ads */
         public boolean ad_enable = true;
 
-        /* trial count for backup ads */
-        public int retry_ad_networks = 1;
-
-        /* Ad networks selection and backup,
-         * Available ad networks : ADMOB, UNITY, IRONSOURCE */
+        /* MULTI Ad network selection,
+         * Fill this array to enable ad backup flow, left this empty to use single ad_network above
+         * app will try show sequentially from this array
+         * example flow ADMOB > FAN */
         public AdNetworkType[] ad_networks = {
-                AdNetworkType.IRONSOURCE, AdNetworkType.ADMOB, AdNetworkType.UNITY
+                AdNetworkType.ADMOB,
+                AdNetworkType.ADMOB,
+                AdNetworkType.FAN,
+                AdNetworkType.FAN
         };
+
+        /* disable enable ads each page */
+        public boolean ad_main_banner = true;
+        public boolean ad_main_interstitial = true;
+        public boolean ad_splash_open_app = true;
+        public boolean ad_global_open_app = true;
 
         public boolean ad_enable_gdpr = true;
 
         /* show interstitial after several action, this value for action counter */
         public int ad_inters_interval = 2;
 
+        /* maximum load time in second for open app ads */
+        public Integer limit_time_open_app_loading = 4;
+
         /* ad unit for ADMOB */
-        public String ad_admob_publisher_id = "pub-4553889194429284";
-        public String ad_admob_banner_unit_id = "ca-app-pub-4553889194429284/6832866968";
-        public String ad_admob_interstitial_unit_id = "ca-app-pub-4553889194429284/4206703621";
+        public String ad_admob_publisher_id = "pub-3940256099942544";
+        public String ad_admob_banner_unit_id = "ca-app-pub-3940256099942544/6300978111";
+        public String ad_admob_interstitial_unit_id = "ca-app-pub-3940256099942544/1033173712";
+        public String ad_admob_open_app_unit_id = "ca-app-pub-3940256099942544/3419835294";
 
-        /* ad unit for IRON SOURCE */
-        public String ad_ironsource_app_key = "19a2e37a5";
-        public String ad_ironsource_banner_unit_id = "DefaultBanner";
-        public String ad_ironsource_interstitial_unit_id = "DefaultInterstitial";
-
-        /* ad unit for UNITY */
-        public String ad_unity_game_id = "4640907";
-        public String ad_unity_banner_unit_id = "Banner_Android";
-        public String ad_unity_interstitial_unit_id = "Interstitial_Android";
+        /* ad unit for FAN */
+        public String ad_fan_banner_unit_id = "838618500856743_838618544190072";
+        public String ad_fan_interstitial_unit_id = "838618500856743_838618550856738";
     }
 
 }
