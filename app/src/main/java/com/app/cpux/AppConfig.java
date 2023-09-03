@@ -33,16 +33,14 @@ public class AppConfig extends AppConfigExt implements Serializable {
          * example flow ADMOB > FAN */
         public AdNetworkType[] ad_networks = {
                 AdNetworkType.ADMOB,
-                AdNetworkType.ADMOB,
-                AdNetworkType.FAN,
                 AdNetworkType.FAN
         };
 
         /* disable enable ads each page */
         public boolean ad_main_banner = true;
         public boolean ad_main_interstitial = true;
-        public boolean ad_splash_open_app = true;
-        public boolean ad_global_open_app = true;
+        public boolean ad_splash_open_app = false;
+        public boolean ad_global_open_app = false;
 
         public boolean ad_enable_gdpr = true;
 
@@ -53,10 +51,10 @@ public class AppConfig extends AppConfigExt implements Serializable {
         public Integer limit_time_open_app_loading = 4;
 
         /* ad unit for ADMOB */
-        public String ad_admob_publisher_id = "pub-3940256099942544";
-        public String ad_admob_banner_unit_id = "ca-app-pub-3940256099942544/6300978111";
-        public String ad_admob_interstitial_unit_id = "ca-app-pub-3940256099942544/1033173712";
-        public String ad_admob_open_app_unit_id = "ca-app-pub-3940256099942544/3419835294";
+        public String ad_admob_publisher_id = "pub-4553889194429284";
+        public String ad_admob_banner_unit_id = "ca-app-pub-4553889194429284/6832866968";
+        public String ad_admob_interstitial_unit_id = "ca-app-pub-4553889194429284/4206703621";
+        public String ad_admob_open_app_unit_id = "ca-app-pub-4553889194429284/4952416182";
 
         /* ad unit for FAN */
         public String ad_fan_banner_unit_id = "838618500856743_838618544190072";

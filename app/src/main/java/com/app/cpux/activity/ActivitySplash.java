@@ -101,7 +101,7 @@ public class ActivitySplash extends Activity {
 
             try {
                 publishProgress("please wait..");
-                Thread.sleep(500);
+                Thread.sleep(300);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,6 +156,8 @@ public class ActivitySplash extends Activity {
     private void startActivityMain() {
         if (workRunnable != null) handler.removeCallbacks(workRunnable);
         if (!remoteConfigLoaded || !cpuDataLoaded) return;
+
+        Log.d("REMOTE_CONFIG", "startActivityMain");
         // init open ads for admob
         AdNetworkHelper.loadAndShowOpenAppAd(this, AppConfig.ads.ad_splash_open_app, () -> {
             new Handler(getMainLooper()).postDelayed(() -> {
@@ -163,6 +165,7 @@ public class ActivitySplash extends Activity {
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 startActivity(i);
                 finish();
+                Log.d("REMOTE_CONFIG", "finish");
             }, 50);
         });
     }

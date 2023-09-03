@@ -14,6 +14,18 @@ public class AppConfigExt {
 
     // Set data from remote config
     public static void setFromRemoteConfig(FirebaseRemoteConfig remote) {
+
+        // fetch Ads Config with data from remote config
+        if (!remote.getString("ad_enable").isEmpty()) {
+            AppConfig.ads.ad_enable = Boolean.parseBoolean(remote.getString("ad_enable"));
+        }
+        if (!remote.getString("limit_time_open_app_loading").isEmpty()) {
+            try {
+                AppConfig.ads.limit_time_open_app_loading = Integer.parseInt(remote.getString("limit_time_open_app_loading"));
+            } catch (Exception e) {
+            }
+        }
+
         if (!remote.getString("ad_networks").isEmpty()) {
 
             String[] arr = remote.getString("ad_networks").split(",");

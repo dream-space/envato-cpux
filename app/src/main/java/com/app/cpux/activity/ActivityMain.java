@@ -52,7 +52,7 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initToolbar();
         iniComponent();
-        requestRemoteConfig();
+        prepareAds();
     }
 
     private void iniComponent() {
@@ -245,26 +245,6 @@ public class ActivityMain extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
-    }
-
-
-    private void requestRemoteConfig() {
-        if (!AppConfig.USE_REMOTE_CONFIG) {
-            prepareAds();
-            return;
-        }
-        Log.d("REMOTE_CONFIG", "requestRemoteConfig");
-        FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        firebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d("REMOTE_CONFIG", "SUCCESS");
-                AppConfig.setFromRemoteConfig(firebaseRemoteConfig);
-                prepareAds();
-            } else {
-                Log.d("REMOTE_CONFIG", "FAILED");
-                new Handler().postDelayed(this::requestRemoteConfig, 500);
-            }
-        });
     }
 
     @Override
