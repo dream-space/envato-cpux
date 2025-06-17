@@ -19,12 +19,6 @@ public class AppConfigExt {
         if (!remote.getString("ad_enable").isEmpty()) {
             AppConfig.ads.ad_enable = Boolean.parseBoolean(remote.getString("ad_enable"));
         }
-        if (!remote.getString("limit_time_open_app_loading").isEmpty()) {
-            try {
-                AppConfig.ads.limit_time_open_app_loading = Integer.parseInt(remote.getString("limit_time_open_app_loading"));
-            } catch (Exception e) {
-            }
-        }
 
         if (!remote.getString("ad_networks").isEmpty()) {
 
@@ -38,6 +32,13 @@ public class AppConfigExt {
                 }
             }
             AppConfig.ads.ad_networks = adNetworkTypes;
+        }
+
+        if (!remote.getString("retry_from_start_max").isEmpty()) {
+            try {
+                AppConfig.ads.retry_from_start_max = Integer.parseInt(remote.getString("retry_from_start_max"));
+            } catch (Exception e) {
+            }
         }
 
         if (!remote.getString("ad_enable_gdpr").isEmpty()) {
@@ -64,6 +65,17 @@ public class AppConfigExt {
             }
         }
 
+        if (!remote.getString("ad_replace_unsupported_open_app_with_interstitial_on_splash").isEmpty()) {
+            AppConfig.ads.ad_replace_unsupported_open_app_with_interstitial_on_splash = Boolean.parseBoolean(remote.getString("ad_replace_unsupported_open_app_with_interstitial_on_splash"));
+        }
+
+        if (!remote.getString("ad_inters_interval").isEmpty()) {
+            try {
+                AppConfig.ads.ad_inters_interval = Integer.parseInt(remote.getString("ad_inters_interval"));
+            } catch (Exception e) {
+            }
+        }
+
         if (!remote.getString("ad_admob_publisher_id").isEmpty()) {
             AppConfig.ads.ad_admob_publisher_id = remote.getString("ad_admob_publisher_id");
         }
@@ -73,8 +85,25 @@ public class AppConfigExt {
         if (!remote.getString("ad_admob_interstitial_unit_id").isEmpty()) {
             AppConfig.ads.ad_admob_interstitial_unit_id = remote.getString("ad_admob_interstitial_unit_id");
         }
+        if (!remote.getString("ad_admob_rewarded_unit_id").isEmpty()) {
+            AppConfig.ads.ad_admob_rewarded_unit_id = remote.getString("ad_admob_rewarded_unit_id");
+        }
         if (!remote.getString("ad_admob_open_app_unit_id").isEmpty()) {
             AppConfig.ads.ad_admob_open_app_unit_id = remote.getString("ad_admob_open_app_unit_id");
+        }
+
+
+        if (!remote.getString("ad_manager_banner_unit_id").isEmpty()) {
+            AppConfig.ads.ad_manager_banner_unit_id = remote.getString("ad_manager_banner_unit_id");
+        }
+        if (!remote.getString("ad_manager_interstitial_unit_id").isEmpty()) {
+            AppConfig.ads.ad_manager_interstitial_unit_id = remote.getString("ad_manager_interstitial_unit_id");
+        }
+        if (!remote.getString("ad_manager_rewarded_unit_id").isEmpty()) {
+            AppConfig.ads.ad_manager_rewarded_unit_id = remote.getString("ad_manager_rewarded_unit_id");
+        }
+        if (!remote.getString("ad_manager_open_app_unit_id").isEmpty()) {
+            AppConfig.ads.ad_manager_open_app_unit_id = remote.getString("ad_manager_open_app_unit_id");
         }
 
         if (!remote.getString("ad_fan_banner_unit_id").isEmpty()) {
@@ -83,5 +112,22 @@ public class AppConfigExt {
         if (!remote.getString("ad_fan_interstitial_unit_id").isEmpty()) {
             AppConfig.ads.ad_fan_banner_unit_id = remote.getString("ad_fan_banner_unit_id");
         }
+        if (!remote.getString("ad_fan_rewarded_unit_id").isEmpty()) {
+            AppConfig.ads.ad_fan_rewarded_unit_id = remote.getString("ad_fan_rewarded_unit_id");
+        }
+
+        if (!remote.getString("ad_ironsource_app_key").isEmpty()) {
+            AppConfig.ads.ad_ironsource_app_key = remote.getString("ad_ironsource_app_key");
+        }
+        if (!remote.getString("ad_ironsource_banner_unit_id").isEmpty()) {
+            AppConfig.ads.ad_ironsource_banner_unit_id = remote.getString("ad_ironsource_banner_unit_id");
+        }
+        if (!remote.getString("ad_ironsource_rewarded_unit_id").isEmpty()) {
+            AppConfig.ads.ad_ironsource_rewarded_unit_id = remote.getString("ad_ironsource_rewarded_unit_id");
+        }
+        if (!remote.getString("ad_ironsource_interstitial_unit_id").isEmpty()) {
+            AppConfig.ads.ad_ironsource_interstitial_unit_id = remote.getString("ad_ironsource_interstitial_unit_id");
+        }
+
     }
 }

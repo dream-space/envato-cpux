@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,8 +20,6 @@ import com.app.cpux.tools.LoaderData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
-import dreamspace.ads.sdk.listener.ActivityListener;
-
 public class ActivitySplash extends Activity {
 
     private LoaderData cpu = null;
@@ -30,10 +27,9 @@ public class ActivitySplash extends Activity {
     private TextView tv_message;
 
     private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable workRunnable;
     private AlertDialog alertDialog;
-    private boolean remoteConfigLoaded = true;
-    private boolean cpuDataLoaded = false;
+    private static boolean remoteConfigLoaded = true;
+    private static boolean cpuDataLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +56,7 @@ public class ActivitySplash extends Activity {
         protected String doInBackground(String... params) {
             cpuDataLoaded = false;
             try {
-                publishProgress("load cpu info");
+                publishProgress("Load cpu info");
                 Thread.sleep(300);
                 cpu.loadCpuInfo();
             } catch (Exception e) {
@@ -68,7 +64,7 @@ public class ActivitySplash extends Activity {
             }
 
             try {
-                publishProgress("load battery info");
+                publishProgress("Load battery info");
                 Thread.sleep(300);
                 cpu.loadBateryInfo();
             } catch (Exception e) {
@@ -76,7 +72,7 @@ public class ActivitySplash extends Activity {
             }
 
             try {
-                publishProgress("load device info");
+                publishProgress("Load device info");
                 Thread.sleep(300);
                 cpu.loadDeviceInfo();
             } catch (Exception e) {
@@ -84,7 +80,7 @@ public class ActivitySplash extends Activity {
             }
 
             try {
-                publishProgress("load system info");
+                publishProgress("Load system info");
                 Thread.sleep(300);
                 cpu.loadSystemInfo();
             } catch (Exception e) {
@@ -92,7 +88,7 @@ public class ActivitySplash extends Activity {
             }
 
             try {
-                publishProgress("load sensor info");
+                publishProgress("Load sensor info");
                 Thread.sleep(300);
                 cpu.loadSupportInfo();
             } catch (Exception e) {
@@ -100,7 +96,7 @@ public class ActivitySplash extends Activity {
             }
 
             try {
-                publishProgress("please wait..");
+                publishProgress("Please wait..");
                 Thread.sleep(300);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -126,7 +122,6 @@ public class ActivitySplash extends Activity {
     }
 
     private void requestRemoteConfig() {
-        remoteConfigLoaded = false;
         Log.d("REMOTE_CONFIG", "requestRemoteConfig");
         FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         firebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this, (OnCompleteListener<Boolean>) task -> {
@@ -136,11 +131,6 @@ public class ActivitySplash extends Activity {
                 boolean updated = task.getResult();
                 AppConfigExt.setFromRemoteConfig(firebaseRemoteConfig);
 
-                // init ads
-                new AdNetworkHelper(this).init();
-                ActivityListener.currentActivity = this;
-                AdNetworkHelper.initActivityListener(getApplication());
-
                 startActivityMain();
             } else {
                 Log.d("REMOTE_CONFIG", "FAILED");
@@ -149,24 +139,32 @@ public class ActivitySplash extends Activity {
         });
 
         // add timer to prevent too long waiting about 10 sec
-        workRunnable = () -> dialogFailedRemoteConfig("Failed when load data");
-        handler.postDelayed(workRunnable, 6 * 1000);
+        new Handler(this.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                remoteConfigLoaded = true;
+                startActivityMain();
+            }
+        }, 1000 * 8);
     }
 
     private void startActivityMain() {
-        if (workRunnable != null) handler.removeCallbacks(workRunnable);
-        if (!remoteConfigLoaded || !cpuDataLoaded) return;
+        if (!active || !remoteConfigLoaded || !cpuDataLoaded) return;
 
         Log.d("REMOTE_CONFIG", "startActivityMain");
+
+        // init ads
+        AdNetworkHelper adNetworkHelper = new AdNetworkHelper(this);
+        adNetworkHelper.init();
         // init open ads for admob
-        AdNetworkHelper.loadAndShowOpenAppAd(this, AppConfig.ads.ad_splash_open_app, () -> {
+        adNetworkHelper.loadAndShowOpenAppAd(this, AppConfig.ads.ad_splash_open_app, () -> {
             new Handler(getMainLooper()).postDelayed(() -> {
                 Intent i = new Intent(ActivitySplash.this, ActivityMain.class);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 startActivity(i);
                 finish();
                 Log.d("REMOTE_CONFIG", "finish");
-            }, 50);
+            }, 500);
         });
     }
 
@@ -180,6 +178,20 @@ public class ActivitySplash extends Activity {
             requestRemoteConfig();
         });
         alertDialog = builder.show();
+    }
+
+    public static boolean active = false;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        active = false;
     }
 
 }

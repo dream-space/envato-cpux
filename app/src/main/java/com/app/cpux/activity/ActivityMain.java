@@ -100,7 +100,6 @@ public class ActivityMain extends AppCompatActivity {
     private void prepareAds() {
         adNetworkHelper = new AdNetworkHelper(this);
         adNetworkHelper.init();
-        AdNetworkHelper.loadOpenAppAd(this, AppConfig.ads.ad_global_open_app);
         adNetworkHelper.updateConsentStatus();
         adNetworkHelper.loadBannerAd(AppConfig.ads.ad_main_banner);
         adNetworkHelper.loadInterstitialAd(AppConfig.ads.ad_main_interstitial);

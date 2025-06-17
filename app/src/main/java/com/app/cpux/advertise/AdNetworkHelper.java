@@ -1,8 +1,6 @@
 package com.app.cpux.advertise;
 
 import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
 
 import com.app.cpux.AppConfig;
 import com.app.cpux.BuildConfig;
@@ -12,9 +10,12 @@ import dreamspace.ads.sdk.AdConfig;
 import dreamspace.ads.sdk.AdNetwork;
 import dreamspace.ads.sdk.gdpr.GDPR;
 import dreamspace.ads.sdk.gdpr.LegacyGDPR;
+import dreamspace.ads.sdk.gdpr.UMP;
 import dreamspace.ads.sdk.listener.AdOpenListener;
+import dreamspace.ads.sdk.listener.AdRewardedListener;
 
 public class AdNetworkHelper {
+
     private Activity activity;
     private AdNetwork adNetwork;
     private LegacyGDPR legacyGDPR;
@@ -34,20 +35,36 @@ public class AdNetworkHelper {
 
     public static void initConfig() {
         AdConfig.ad_enable = AppConfig.ads.ad_enable;
-        AdConfig.ad_enable_open_app = AppConfig.ads.ad_global_open_app;
-        AdConfig.limit_time_open_app_loading = AppConfig.ads.limit_time_open_app_loading;
-        AdConfig.debug_mode = BuildConfig.DEBUG;
-        AdConfig.enable_gdpr = AppConfig.ads.ad_enable_gdpr;
         AdConfig.ad_networks = AppConfig.ads.ad_networks;
+        AdConfig.retry_from_start_max = 5;
+        AdConfig.enable_gdpr = AppConfig.ads.ad_enable_gdpr;
+
+        AdConfig.ad_replace_unsupported_open_app_with_interstitial_on_splash = false;
         AdConfig.ad_inters_interval = AppConfig.ads.ad_inters_interval;
+        AdConfig.ad_enable_open_app = false;
+        AdConfig.limit_time_open_app_loading = 5;
+        AdConfig.debug_mode = BuildConfig.DEBUG;
 
         AdConfig.ad_admob_publisher_id = AppConfig.ads.ad_admob_publisher_id;
         AdConfig.ad_admob_banner_unit_id = AppConfig.ads.ad_admob_banner_unit_id;
         AdConfig.ad_admob_interstitial_unit_id = AppConfig.ads.ad_admob_interstitial_unit_id;
+        AdConfig.ad_admob_rewarded_unit_id = AppConfig.ads.ad_admob_rewarded_unit_id;
         AdConfig.ad_admob_open_app_unit_id = AppConfig.ads.ad_admob_open_app_unit_id;
+
+        AdConfig.ad_manager_banner_unit_id = AppConfig.ads.ad_manager_banner_unit_id;
+        AdConfig.ad_manager_interstitial_unit_id = AppConfig.ads.ad_manager_interstitial_unit_id;
+        AdConfig.ad_manager_rewarded_unit_id = AppConfig.ads.ad_admob_rewarded_unit_id;
+        AdConfig.ad_manager_open_app_unit_id = AppConfig.ads.ad_manager_open_app_unit_id;
 
         AdConfig.ad_fan_banner_unit_id = AppConfig.ads.ad_fan_banner_unit_id;
         AdConfig.ad_fan_interstitial_unit_id = AppConfig.ads.ad_fan_interstitial_unit_id;
+        AdConfig.ad_fan_rewarded_unit_id = AppConfig.ads.ad_fan_rewarded_unit_id;
+
+        AdConfig.ad_ironsource_app_key = AppConfig.ads.ad_ironsource_app_key;
+        AdConfig.ad_ironsource_banner_unit_id = AppConfig.ads.ad_ironsource_banner_unit_id;
+        AdConfig.ad_ironsource_rewarded_unit_id = AppConfig.ads.ad_ironsource_rewarded_unit_id;
+        AdConfig.ad_ironsource_interstitial_unit_id = AppConfig.ads.ad_ironsource_interstitial_unit_id;
+
     }
 
     public void init() {
@@ -67,21 +84,24 @@ public class AdNetworkHelper {
         return adNetwork.showInterstitialAd(enable);
     }
 
-    public static void loadAndShowOpenAppAd(Context context, boolean enable, AdOpenListener listener) {
-        AdNetwork.loadAndShowOpenAppAd(context, enable, listener);
+    public void loadRewardedAd(boolean enable, AdRewardedListener listener) {
+        adNetwork.loadRewardedAd(enable, listener);
     }
 
-    public static void loadOpenAppAd(Context context, boolean enable) {
-        AdNetwork.loadOpenAppAd(context, enable);
+    public boolean showRewardedAd(boolean enable, AdRewardedListener listener) {
+        return adNetwork.showRewardedAd(enable, listener);
     }
 
-    public static void showOpenAppAd(Context context, boolean enable, AdOpenListener listener) {
-        AdNetwork.showOpenAppAd(context, enable, listener);
+    public void loadAndShowOpenAppAd(Activity activity, boolean enable, AdOpenListener listener) {
+        adNetwork.loadAndShowOpenAppAd(activity, enable, listener);
     }
 
-    public static void initActivityListener(Application application) {
-        initConfig();
-        AdNetwork.init(application);
-        AdNetwork.initActivityListener(application);
+    public void destroyAndDetachBanner() {
+        adNetwork.destroyAndDetachBanner();
     }
+
+    public void loadShowUMPConsentForm() {
+        new UMP(activity).loadShowConsentForm();
+    }
+
 }

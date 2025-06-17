@@ -3,14 +3,14 @@ apply plugin: "com.google.gms.google-services"
 
 android {
     namespace 'com.app.cpux'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.app.cpux"
-        minSdk 19
-        targetSdk 34
-        versionCode 241
-        versionName "2.4"
+        minSdk 21
+        targetSdk 35
+        versionCode 260
+        versionName "2.6"
         multiDexEnabled true
     }
     buildTypes {
@@ -21,16 +21,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.browser:browser:1.5.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.browser:browser:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.balysv:material-ripple:1.0.2'
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -39,8 +39,12 @@ dependencies {
     implementation 'com.google.android.play:app-update:2.1.0'
 
     // firebase library
-    implementation platform('com.google.firebase:firebase-bom:32.2.0')
+    implementation platform('com.google.firebase:firebase-bom:33.15.0')
     implementation 'com.google.firebase:firebase-config'
 
-    implementation 'com.github.dream-space:dreamspace-ads:2.2'
+    // AD NETWORKS OPTIONS :
+    // 3.0.1-custom = Uses AdMob, Meta Audience Network, IronSource
+    // 3.0.1-admob-only = Uses Admob Only
+    // 3.0.1-none = Doesn't use any ads
+    implementation 'com.github.dream-space:dreamspace-ads-sdk:4.0.8-all'
 }
